@@ -1,0 +1,44 @@
+[
+  {
+    "title": "Notebook Lenovo Gamming",
+    "description": "Notebook Lenovo Gamming",
+    "code": "NbLeGa",
+    "price": 10,
+    "status": true,
+    "stock": 20,
+    "category": "compu",
+    "thumbnails": [
+      "./NbLeId01.png",
+      "./NbLeId02.png"
+    ],
+    "id": 1
+  },
+  {
+    "title": "Notebook Lenovo Wifron",
+    "description": "Notebook Lenovo Wifron",
+    "code": "NbLeWi",
+    "price": 10,
+    "status": true,
+    "stock": 20,
+    "category": "compu",
+    "thumbnails": [
+      "./NbLeId01.png",
+      "./NbLeId02.png"
+    ],
+    "id": 2
+  },
+  {
+    "title": "Notebook Lenovo XXX",
+    "description": "Notebook Lenovo WifronBBB",
+    "code": "NbLeWiBBB",
+    "price": 10,
+    "status": true,
+    "stock": 20,
+    "category": "compu",
+    "thumbnails": [
+      "./NbLeId01.png",
+      "./NbLeId02.png"
+    ],
+    "id": 3
+  }
+]
