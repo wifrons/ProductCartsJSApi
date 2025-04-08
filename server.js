@@ -1,10 +1,8 @@
 import express from "express";
-import data from "./data.js"
 import productManager from "./productManager.js"
 import cartsManager from "./cartManager.js";
 let products = [];
 let carts = [];
-let currentId = 0;
 
 const productFilePath = "./products.json";
 const productMgr = new productManager(productFilePath);
@@ -30,7 +28,7 @@ server.get("/api/products/", (req, res) => {
             products = prd;
             console.log(`get --> products:`)
             console.log(products)
-            if (products === undefined) return res.status(404).json({ error: `Hubo un problema al tratar de obtener productos. ☹️` });
+            if (products === undefined) res.status(404).json({ error: `Hubo un problema al tratar de obtener productos. ☹️` });
             if (products.length > 0) {
                 res.json(products);
             } else {
@@ -38,7 +36,7 @@ server.get("/api/products/", (req, res) => {
             }
         })
         .catch((err) => {
-            console.err(err);
+            console.error(err);
         })
 });
 
@@ -59,10 +57,9 @@ server.get("/api/products/:pid", (req, res) => {
             }
         })
         .catch((err) => {
-            console.err(`Error in Get:pid --> error: ${err}`);
+            console.error(`Error in Get:pid --> error: ${err}`);
             res.status(404).json({ error: `Ocurrio un error al obtener el id: ${pid}. 😐` });
-        })
-
+        });
 });
 
 //-->POST   /api/products/
@@ -109,33 +106,9 @@ server.post("/api/products/", (req, res) => {
 
 //-->PUT    /api/products/:pid
 server.put("/api/products/:pid", (req, res) => {
-
-    /* 
-        if (products.length > 0) {
-            const { pid } = req.params;
-            const { description, price, status, stock, category, thumbnails } = req.body;
-            const updProduct = { description, price, status, stock, category, thumbnails };
-    
-            let pfound = products.find(f => f.id === parseInt(pid));
-            if (!pfound) return res.status(404).json({ error: `No se encontró el producto con id ${pid}. 😐` });
-    
-            pfound.description = updProduct.description;
-            pfound.price = parseInt(updProduct.price);
-            pfound.status = updProduct.status;
-            pfound.stock = parseInt(updProduct.stock);
-            pfound.category = updProduct.category;
-            pfound.thumbnails = updProduct.thumbnails;
-    
-            res.json({ messaje: "Producto actualizado exitosamente. 🤗" });
-        } else {
-            res.send("No hay productos almacenados. ☹️");
-        }
-     */
-
-    //new version
     const { pid } = req.params;
     const { description, code, price, status, stock, category, thumbnails } = req.body;
-    //const productUpd = { description, price, status, stock, category, thumbnails };
+
     productMgr.getProducts()
         .then((prd) => {
             products = prd;
@@ -172,18 +145,6 @@ server.put("/api/products/:pid", (req, res) => {
 
 //-->DELETE /api/products/:pid
 server.delete("/api/products/:pid", (req, res) => {
-    /*     if (products.length > 0) {
-            const { pid } = req.params;
-            let pfound = products.find(f => f.id === parseInt(pid));
-            if (!pfound) return res.status(404).json({ error: `No se encontró el producto con id ${pid}. 😐` });
-            products = products.filter((p) => p.id !== parseInt(pid));
-            res.json({ messaje: "Producto eliminado exitosamente. 😵" });
-        } else {
-            res.send("No hay productos almacenados. ☹️");
-        } */
-
-
-    //new version
     const { pid } = req.params;
     productMgr.getProducts()
         .then((prd) => {
@@ -219,8 +180,8 @@ server.get("/api/carts/", (req, res) => {
     cartsMgr.getCarts()
         .then((crts) => {
             carts = crts;
-            console.log(`get --> carts:`)
-            console.log(carts)
+            /*             console.log(`get --> carts:`)
+                        console.log(carts) */
             if (carts === undefined) return res.status(404).json({ error: `Hubo un problema al tratar de obtener carritos. ☹️` });
             if (carts.length > 0) {
                 res.json(carts);
@@ -229,7 +190,7 @@ server.get("/api/carts/", (req, res) => {
             }
         })
         .catch((err) => {
-            console.err(`Error in Get:/api/carts/ --> error: ${err}`);
+            console.error(`Error in Get:/api/carts/ --> error: ${err}`);
             res.status(404).json({ error: `Get:/api/carts/ -->> Ocurrio un error al obtener todos los carritos. 😐` });
         })
 });
@@ -251,55 +212,33 @@ server.get("/api/carts/:cid", (req, res) => {
             }
         })
         .catch((err) => {
-            console.err(`Error in Get:/api/carts/:cid --> error: ${err}`);
+            console.error(`Error in Get:/api/carts/:cid --> error: ${err}`);
             res.status(404).json({ error: `Get:/api/carts/:cid -->> Ocurrio un error al obtener el carrito con id: ${cid}. 😐` });
         })
 });
 
+//-->POST   /api/carts/
 server.post("/api/carts/", (req, res) => {
-    const { cid } = req.params; // id del carrito
-    //No hay carritos
+
     cartsMgr.getCarts()
         .then((crts) => {
             carts = crts;
             if (carts === undefined) return res.status(404).json({ error: `Hubo un problema al tratar de obtener carritos. ☹️` });
-            if (carts.length > 0) {
-                const cartIndex = carts.findIndex(f => f.id === parseInt(cid))
-                if (!cart) {
-                    //No hay carritos
-                    carts.push = ({ id: carts[cartIndex].id + 1});
-                    cartsMgr.AddCarts(carts)
-                        .then(() => {
-                            //res.json({ messaje: "Carrito actualizado exitosamente. 🙂" });
-                            res.status(200).json({ messaje: "Carrito Creado exitosamente. 🙂", carts: carts });
-                        })
-                        .catch((err) => {
-                            console.error(`Error in put /api/carts/:cid --> error: ${err}`);
-                            res.status(400).json({ error: `No se pudo agregar el carrito con id: ${cid} en el carrito. 😐` });
-                        })
-                } else {
 
-                    return res.status(404).json({ error: `Carrito con id: ${cid}, ya existe. 😐` });
-                }
-                res.json(cart);
-            } else {
-                carts = [];
-                carts.push = ({ id: 1});
-                cartsMgr.AddCarts(carts)
-                    .then(() => {
-                        //res.json({ messaje: "Carrito actualizado exitosamente. 🙂" });
-                        res.status(200).json({ messaje: "Carrito Creado exitosamente. 🙂", carts: carts });
-                    })
-                    .catch((err) => {
-                        console.error(`Error in put /api/carts/:cid --> error: ${err}`);
-                        res.status(400).json({ error: `No se pudo agregar el carrito con id: ${ cid } en el carrito. 😐` });
-                    })
-                res.send("No hay carritos almacenados. ☹️");
-            }
+            carts.push({ id: parseInt(carts.length + 1), products: [] });
+            cartsMgr.AddCarts(carts)
+                .then(() => {
+                    res.status(200).json({ messaje: "Carrito Creado exitosamente. 🙂", carts: carts });
+                })
+                .catch((err) => {
+                    console.error(`Error in put /api/carts/ --> error: ${err}`);
+                    res.status(400).json({ error: `No se pudo agregar el carrito. 😐` });
+                })
+
         })
         .catch((err) => {
-            console.err(`Error in Get:/api/carts/:cid --> error: ${err}`);
-            res.status(404).json({ error: `Get:/api/carts/:cid -->> Ocurrio un error al obtener el carrito con id: ${cid}. 😐` });
+            console.error(`Error in POST /api/carts/ --> error: ${err}`);
+            res.status(404).json({ error: `POST /api/carts -->> Ocurrio un error al obtener el carrito. 😐` });
         })
 });
 
@@ -312,20 +251,23 @@ server.put("/api/carts/:cid", (req, res) => {
         .then((crts) => {
             carts = crts;
 
-            if (carts === undefined) return res.status(404).json({ error: `Hubo un problema al tratar de obtener carritos. ☹️` });
+            if (carts === undefined) res.status(404).json({ error: `Hubo un problema al tratar de obtener carritos. ☹️` });
 
             if (carts.length > 0) {
                 //Si hay carritos
                 const cartIndex = carts.findIndex((f) => f.id === parseInt(cid));
                 if (cartIndex !== -1) {
                     //Encontro el Carrito cid
+                    console.log("PUT /api/carts/:cid --> Encontro el Carrito cid.");
+                    console.log(cartIndex);
                     const cartProducts = carts[cartIndex].products;
                     console.log(cartProducts);
 
                     const cartProductIndex = cartProducts.findIndex((f) => f.id === parseInt(id))
 
                     if (cartProductIndex !== -1) {
-                        //Encontro producto en el carrito
+                        //Encontro el producto en el carrito
+                        console.log("PUT /api/carts/:cid --> Encontro el producto en el carrito.");
                         carts[cartIndex].products[cartProductIndex].quantity = carts[cartIndex].products[cartProductIndex].quantity + quantity;
                         cartsMgr.UpdCarts(carts)
                             .then(() => {
@@ -338,12 +280,13 @@ server.put("/api/carts/:cid", (req, res) => {
                     }
                     else {
                         //No Encontro producto en el carrito
+                        console.log("PUT /api/carts/:cid --> No Encontro producto en el carrito.");
                         let newCarts = carts;
-                        newCarts[cartIndex].products.push({ ...newCarts[cartIndex].products, quantity: quantity });
+                        newCarts[cartIndex].products.push({ id: id, quantity: quantity });
                         cartsMgr.UpdCarts(newCarts)
                             .then(() => {
                                 carts = newCarts;
-                                res.json({ messaje: "Carrito actualizado exitosamente. 🙂" });
+                                res.json({ messaje: "Carrito actualizado exitosamente. 🙂", carts: carts });
                             })
                             .catch((err) => {
                                 console.error(`Error in put /api/carts/:cid --> error: ${err}`);
@@ -352,12 +295,12 @@ server.put("/api/carts/:cid", (req, res) => {
                     }
                 } else {
                     //No Encontro el carrito cid
-                    console.log("else cartIndex !== -1");
-                    carts.push({ ...carts, id: cid, products: { id, quantity } })
+                    console.log("PUT /api/carts/:cid --> No Encontro el carrito cid.");
+
+                    carts.push({ id: cid, products: { id, quantity } })
                     console.log(carts);
                     cartsMgr.UpdCarts(carts)
                         .then(() => {
-                            //res.json({ messaje: "Carrito actualizado exitosamente. 🙂" });
                             res.status(200).json({ messaje: "Carrito actualizado exitosamente. 🙂", carts: carts });
                         })
                         .catch((err) => {
@@ -367,12 +310,11 @@ server.put("/api/carts/:cid", (req, res) => {
                 }
             } else {
                 //No hay carritos
-                console.log("else carts.length > 0");
+                console.log("PUT /api/carts/:cid --> No hay carritos.");
                 carts = [];
-                carts.push = ({ id: cid, products: { id, quantity } })
+                carts.push({ id: cid, products: { id, quantity } })
                 cartsMgr.AddCarts(carts)
                     .then(() => {
-                        //res.json({ messaje: "Carrito actualizado exitosamente. 🙂" });
                         res.status(200).json({ messaje: "Carrito Creado exitosamente. 🙂", carts: carts });
                     })
                     .catch((err) => {
@@ -380,7 +322,47 @@ server.put("/api/carts/:cid", (req, res) => {
                         res.status(400).json({ error: `No se pudo agregar el carrito con id: ${carts[cartIndex].products[cartProductIndex].id} en el carrito. 😐` });
                     })
             }
-            res.json(carts);
+        })
+        .catch((err) => {
+            console.error(`Error in Get:/api/carts/ --> error: ${err}`);
+            res.status(404).json({ error: `Get:/api/carts/ -->> Ocurrio un error al obtener todos los carritos. 😐` });
+        })
+});
+
+//-->DELETE   /api/carts/:cid
+server.delete("/api/carts/:cid", (req, res) => {
+    const { cid } = req.params; // id del carrito
+
+    cartsMgr.getCarts()
+        .then((crts) => {
+            carts = crts;
+
+            if (carts === undefined) res.status(404).json({ error: `Hubo un problema al tratar de obtener carritos. ☹️` });
+
+            if (carts.length > 0) {
+                //Si hay carritos
+                console.log(carts);
+                let cfound = carts.find(f => f.id === parseInt(cid));
+                if (!cfound) return res.status(404).json({ error: `No se encontró el carrito con id ${cid}. 😐` });
+
+                console.log("DELETE /api/carts/:cid --> Encontro el Carrito cid.");
+                let newCarts = carts.filter((c) => c.id !== parseInt(cid));
+                console.log(newCarts);
+                cartsMgr.AddCarts(newCarts)
+                    .then(() => {
+                        carts = newCarts;
+                        res.status(200).json({ messaje: "Carrito eliminado exitosamente. 😵", carts: carts });
+                    })
+                    .catch((err) => {
+                        console.error(`Error in products.delete --> error: ${err}`);
+                        res.status(400).json({ error: `No se pudo borrar el producto: ${code} . 😐` });
+                    })
+
+            } else {
+                //No hay carritos
+                console.log("DELETE /api/carts/:cid --> No hay carritos.");
+                res.status(400).json({ error: `No hay carritos. 😐` });
+            }
         })
         .catch((err) => {
             console.error(`Error in Get:/api/carts/ --> error: ${err}`);
