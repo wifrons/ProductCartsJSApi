@@ -65,6 +65,10 @@ server.get("/api/products/:pid", (req, res) => {
 //-->POST   /api/products/
 server.post("/api/products/", (req, res) => {
     const { title, description, code, price, status, stock, category, thumbnails } = req.body;
+    if (!title || !description || !code || !price || !status || !stock || !category || !thumbnails) {
+        return res.status(404).json({ error: `Faltan datos. 🙃` });
+    }
+
     const newProduct = { title, description, code, price, status, stock, category, thumbnails };
     let newId = 1;
 
@@ -108,6 +112,10 @@ server.post("/api/products/", (req, res) => {
 server.put("/api/products/:pid", (req, res) => {
     const { pid } = req.params;
     const { description, code, price, status, stock, category, thumbnails } = req.body;
+
+    if (!description || !code || !price || !status || !stock || !category || !thumbnails) {
+        return res.status(404).json({ error: `Faltan datos. 🙃` });
+    }
 
     productMgr.getProducts()
         .then((prd) => {
@@ -246,6 +254,10 @@ server.post("/api/carts/", (req, res) => {
 server.put("/api/carts/:cid", (req, res) => {
     const { cid } = req.params; // id del carrito
     const { id, quantity } = req.body; // datos del producto
+
+    if (!id || !quantity) {
+        return res.status(404).json({ error: `Faltan datos. 🙃` });
+    }
 
     cartsMgr.getCarts()
         .then((crts) => {

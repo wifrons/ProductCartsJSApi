@@ -39,5 +39,4 @@ class cartsManager {
 
 }
 
-
 export default cartsManager;
