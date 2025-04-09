@@ -1,4 +1,17 @@
-Metodos HTTP implementados
+************************************************************************************************
+WILLIAM RODRIGUEZ - ENTREGA 01 - API MANEJADOR DE PRODRUCTOS Y CARRITOS 
+************************************************************************************************
+
+-->>> El server dispone de las rutas: 
+
+http://localhost:8080/api/products/
+http://localhost:8080/api/carts/ 
+
+-->>> Desde postman ejecute un metodo GET para http://localhost:8080/api/
+
+
+
+-->>> Metodos HTTP implementados
 
 //************************************************ PRODUCTS
 //-->GET    /api/products/
